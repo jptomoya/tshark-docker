@@ -2,7 +2,7 @@ name: Scheduled Dockerfile update with git-auto-commit
 
 on:
   schedule:
-    - cron: '35 * * * *'
+    - cron: '0 * * * *'
 
 jobs:
   update_dockerfile:
