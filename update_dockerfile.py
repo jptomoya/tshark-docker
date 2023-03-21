@@ -64,6 +64,6 @@ def retrieve_jobid() -> tuple[int, str]:
 
 if __name__ == '__main__':
     job_id, version_str = retrieve_jobid()
-    print(f"Latest version of tahsrk: {version_str}")
+    print(f"Latest version of tshark: {version_str}")
     generate_dockerfile(job_id, version_str, 'Dockerfile')
 
