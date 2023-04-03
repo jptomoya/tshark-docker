@@ -10,9 +10,7 @@ DOCKERFILE_TEMPLATE = """FROM ubuntu:22.04
 RUN mkdir -p /root/debs
 WORKDIR /root/debs
 
-RUN apt-get update && apt-get install -y --no-install-recommends \\
-  ca-certificates wget \\
-  libbcg729-0 libc-ares2 liblua5.2-0 libnghttp2-14 libopus0 libsbc1 libsmi2ldbl libsnappy1v5 libspandsp2 libcap2-bin libmaxminddb0 libnl-3-200 libnl-genl-3-200 libpam-cap libpcap0.8 libssh-gcrypt-4 libglib2.0-0 libbrotli1 libxml2 \\
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates wget \\
 # picked from latest Ubuntu APT Package: https://gitlab.com/wireshark/wireshark/-/pipelines?page=1&scope=tags&status=success
   && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwireshark-data_{version_str}_all.deb \\
   && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwsutil14_{version_str}_amd64.deb \\
@@ -21,12 +19,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \\
   && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/wireshark-common_{version_str}_amd64.deb \\
   && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/tshark_{version_str}_amd64.deb \\
   && apt-get purge --auto-remove -y ca-certificates wget \\
-  && dpkg -i libwireshark-data_{version_str}_all.deb \\
-  && dpkg -i libwsutil14_{version_str}_amd64.deb \\
-  && dpkg -i libwiretap13_{version_str}_amd64.deb \\
-  && dpkg -i libwireshark16_{version_str}_amd64.deb \\
-  && DEBIAN_FRONTEND=noninteractive dpkg -i wireshark-common_{version_str}_amd64.deb \\
-  && dpkg -i tshark_{version_str}_amd64.deb \\
+  && (DEBIAN_FRONTEND=noninteractive dpkg -i -R /root/debs || :) \\
+  && apt-get install -y --fix-broken --no-install-recommends \\
+  && DEBIAN_FRONTEND=noninteractive dpkg -i -R /root/debs \\
   && rm -rf /root/debs \\
   && rm -rf /var/lib/apt/lists/*
 
