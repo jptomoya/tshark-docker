@@ -65,7 +65,7 @@ if __name__ == '__main__':
     else:
         f = sys.stdout
 
-    print(f"Latest version of tshark: {version_str}")
+    f.write(f"Latest version of tshark: {version_str}\n")
     generate_dockerfile(job_id, version_str, 'Dockerfile')
 
     if not f is sys.stdout:
