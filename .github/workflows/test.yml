@@ -15,8 +15,9 @@ jobs:
       - name: Install tshark with install-tshark.sh script
         run: ./install-tshark.sh
       - name: Display tshark version info
-        run: echo "# tshark version info" >> $GITHUB_STEP_SUMMARY
-        run: echo '```' >> $GITHUB_STEP_SUMMARY
-        run: tshark --version >> $GITHUB_STEP_SUMMARY
-        run: echo '```' >> $GITHUB_STEP_SUMMARY
+        run: |
+          echo "# tshark version info" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tshark --version >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
