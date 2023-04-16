@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install tshark with install-tshark.sh script
-        run: ./install-tshark.sh
+        run: sudo ./install-tshark.sh
       - name: Display tshark version info
         run: |
           echo "# tshark version info" >> $GITHUB_STEP_SUMMARY
