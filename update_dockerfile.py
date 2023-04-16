@@ -1,6 +1,5 @@
 from __future__ import annotations
 import os
-import sys
 import json
 import urllib.request
 from packaging import version
@@ -60,14 +59,6 @@ def retrieve_jobid() -> tuple[int, str]:
 
 if __name__ == '__main__':
     job_id, version_str = retrieve_jobid()
-    if filename := os.environ.get("GITHUB_STEP_SUMMARY"):
-        f = open(filename, 'a')
-    else:
-        f = sys.stdout
-
-    f.write(f"Latest version of tshark: {version_str}\n")
+    print(f"Latest version of tshark: {version_str}")
     generate_dockerfile(job_id, version_str, 'Dockerfile')
-
-    if not f is sys.stdout:
-        f.close()
 
