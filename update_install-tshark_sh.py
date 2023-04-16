@@ -5,7 +5,7 @@ import urllib.request
 from packaging import version
 
 PIPELINES_URL = 'https://gitlab.com/wireshark/wireshark/-/pipelines.json?scope=tags&page=1&status=success'
-DOCKERFILE_TEMPLATE = """#!/bin/sh
+SH_TEMPLATE = """#!/bin/sh
 set -eu
 
 dir_debs="$(mktemp -d)"
@@ -30,14 +30,14 @@ dir_debs="$(mktemp -d)"
 rm -rf "$dir_debs"
 """
 
-def generate_dockerfile(job_id: int, version_str: str, dockerfile_path: str) -> None:
-    dockerfile_content = DOCKERFILE_TEMPLATE.format(
+def generate_shellscript(job_id: int, version_str: str, filepath: str) -> None:
+    content = SH_TEMPLATE.format(
         job_id=job_id,
         version_str=version_str,
     )
     
-    with open(dockerfile_path, 'w') as f:
-        f.write(dockerfile_content)
+    with open(filepath, 'w') as f:
+        f.write(content)
 
 def retrieve_jobid() -> tuple[int, str]:
     req = urllib.request.Request(PIPELINES_URL)
@@ -62,5 +62,5 @@ def retrieve_jobid() -> tuple[int, str]:
 if __name__ == '__main__':
     job_id, version_str = retrieve_jobid()
     print(f"Latest version of tshark: {version_str}")
-    generate_dockerfile(job_id, version_str, 'install-tshark.sh')
+    generate_shellscript(job_id, version_str, 'install-tshark.sh')
 
