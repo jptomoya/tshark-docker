@@ -1,0 +1,22 @@
+name: Test install-tshark.sh script
+
+on:
+  push:
+    paths:
+      - 'install-tshark.sh'
+  workflow_dispatch:
+
+jobs:
+  test_install-tshark_sh:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install tshark with install-tshark.sh script
+        run: ./install-tshark.sh
+      - name: Display tshark version info
+        run: echo "# tshark version info" >> $GITHUB_STEP_SUMMARY
+        run: echo '```' >> $GITHUB_STEP_SUMMARY
+        run: tshark --version >> $GITHUB_STEP_SUMMARY
+        run: echo '```' >> $GITHUB_STEP_SUMMARY
+
