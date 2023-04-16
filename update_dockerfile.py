@@ -5,27 +5,29 @@ import urllib.request
 from packaging import version
 
 PIPELINES_URL = 'https://gitlab.com/wireshark/wireshark/-/pipelines.json?scope=tags&page=1&status=success'
-DOCKERFILE_TEMPLATE = """FROM ubuntu:22.04
+DOCKERFILE_TEMPLATE = """#!/bin/sh
+set -eu
 
-RUN mkdir -p /root/debs
-WORKDIR /root/debs
+dir_debs="$(mktemp -d)"
+(
+  cd "$dir_debs"
 
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates wget \\
-# picked from latest Ubuntu APT Package: https://gitlab.com/wireshark/wireshark/-/pipelines?page=1&scope=tags&status=success
-  && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwireshark-data_{version_str}_all.deb \\
-  && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwsutil14_{version_str}_amd64.deb \\
-  && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwiretap13_{version_str}_amd64.deb \\
-  && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwireshark16_{version_str}_amd64.deb \\
-  && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/wireshark-common_{version_str}_amd64.deb \\
-  && wget --no-hsts https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/tshark_{version_str}_amd64.deb \\
-  && apt-get purge --auto-remove -y ca-certificates wget \\
-  && (DEBIAN_FRONTEND=noninteractive dpkg -i -R /root/debs || :) \\
-  && apt-get install -y --fix-broken --no-install-recommends \\
-  && DEBIAN_FRONTEND=noninteractive dpkg -i -R /root/debs \\
-  && rm -rf /root/debs \\
-  && rm -rf /var/lib/apt/lists/*
+  # picked from latest Ubuntu APT Package: https://gitlab.com/wireshark/wireshark/-/pipelines?page=1&scope=tags&status=success
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwireshark-data_{version_str}_all.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwsutil14_{version_str}_amd64.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwiretap13_{version_str}_amd64.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/libwireshark16_{version_str}_amd64.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/wireshark-common_{version_str}_amd64.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/{job_id}/artifacts/raw/ubuntu-packages/tshark_{version_str}_amd64.deb
+  echo "wireshark-common wireshark-common/install-setuid boolean true" | debconf-set-selections
+  if ! (DEBIAN_FRONTEND=noninteractive dpkg -i -R . && :); then
+    apt-get update
+    apt-get install -y --fix-broken --no-install-recommends
+    DEBIAN_FRONTEND=noninteractive dpkg -i -R .
+  fi
+)
 
-WORKDIR /
+rm -rf "$dir_debs"
 """
 
 def generate_dockerfile(job_id: int, version_str: str, dockerfile_path: str) -> None:
@@ -60,5 +62,5 @@ def retrieve_jobid() -> tuple[int, str]:
 if __name__ == '__main__':
     job_id, version_str = retrieve_jobid()
     print(f"Latest version of tshark: {version_str}")
-    generate_dockerfile(job_id, version_str, 'Dockerfile')
+    generate_dockerfile(job_id, version_str, 'install-tshark.sh')
 
