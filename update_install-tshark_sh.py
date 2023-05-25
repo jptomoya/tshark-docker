@@ -43,7 +43,7 @@ def retrieve_jobid() -> tuple[int, str]:
     req = urllib.request.Request(PIPELINES_URL)
     with urllib.request.urlopen(req) as res:
         pipelines = json.loads(res.read())
-    vers = [(x['id'], version.parse(x['ref']['name'])) for x in pipelines['pipelines'] if x['ref']['tag'] and x['ref']['name'].startswith('v')]
+    vers = [(x['id'], version.parse(x['ref']['name'])) for x in pipelines['pipelines'] if x['ref']['tag'] and x['ref']['name'].startswith('v') and not x['active']]
     vers = [x for x in vers if not x[1].is_prerelease]
     pipeline_id, version_str = max(vers, key=lambda x: x[1])
 
