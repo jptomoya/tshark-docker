@@ -9,11 +9,10 @@ jobs:
   update_dockerfile:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-
     steps:
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
