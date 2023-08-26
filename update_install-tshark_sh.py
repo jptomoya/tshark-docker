@@ -40,10 +40,12 @@ def generate_shellscript(job_id: int, version_str: str, filepath: str) -> None:
         f.write(content)
 
 def retrieve_jobid() -> tuple[int, str]:
+    has_test_stage = lambda pipeline: any(x.get('name') == 'test' for x in pipeline['details']['stages'])
+
     req = urllib.request.Request(PIPELINES_URL)
     with urllib.request.urlopen(req) as res:
         pipelines = json.loads(res.read())
-    vers = [(x['id'], version.parse(x['ref']['name'])) for x in pipelines['pipelines'] if x['ref']['tag'] and x['ref']['name'].startswith('v') and not x['active']]
+    vers = [(x['id'], version.parse(x['ref']['name'])) for x in pipelines['pipelines'] if x['ref']['tag'] and x['ref']['name'].startswith('v') and not x['active'] and has_test_stage(x)]
     vers = [x for x in vers if not x[1].is_prerelease]
     pipeline_id, version_str = max(vers, key=lambda x: x[1])
 
