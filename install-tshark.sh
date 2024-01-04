@@ -6,12 +6,12 @@ dir_debs="$(mktemp -d)"
   cd "$dir_debs"
 
   # picked from latest Ubuntu APT Package: https://gitlab.com/wireshark/wireshark/-/pipelines?page=1&scope=tags&status=success
-  wget https://gitlab.com/wireshark/wireshark/-/jobs/5545134088/artifacts/raw/ubuntu-packages/libwireshark-data_4.2.0_all.deb
-  wget https://gitlab.com/wireshark/wireshark/-/jobs/5545134088/artifacts/raw/ubuntu-packages/libwsutil15_4.2.0_amd64.deb
-  wget https://gitlab.com/wireshark/wireshark/-/jobs/5545134088/artifacts/raw/ubuntu-packages/libwiretap14_4.2.0_amd64.deb
-  wget https://gitlab.com/wireshark/wireshark/-/jobs/5545134088/artifacts/raw/ubuntu-packages/libwireshark17_4.2.0_amd64.deb
-  wget https://gitlab.com/wireshark/wireshark/-/jobs/5545134088/artifacts/raw/ubuntu-packages/wireshark-common_4.2.0_amd64.deb
-  wget https://gitlab.com/wireshark/wireshark/-/jobs/5545134088/artifacts/raw/ubuntu-packages/tshark_4.2.0_amd64.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/5855141234/artifacts/raw/ubuntu-packages/libwireshark-data_4.2.1_all.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/5855141234/artifacts/raw/ubuntu-packages/libwsutil15_4.2.1_amd64.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/5855141234/artifacts/raw/ubuntu-packages/libwiretap14_4.2.1_amd64.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/5855141234/artifacts/raw/ubuntu-packages/libwireshark17_4.2.1_amd64.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/5855141234/artifacts/raw/ubuntu-packages/wireshark-common_4.2.1_amd64.deb
+  wget https://gitlab.com/wireshark/wireshark/-/jobs/5855141234/artifacts/raw/ubuntu-packages/tshark_4.2.1_amd64.deb
   echo "wireshark-common wireshark-common/install-setuid boolean true" | debconf-set-selections
   if ! (DEBIAN_FRONTEND=noninteractive dpkg -i -R . && :); then
     apt-get update
